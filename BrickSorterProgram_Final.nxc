@@ -1,0 +1,51 @@
+#define gray 270
+#define black 180
+
+#define GrayAngle 180
+
+#define PlusMinus 50
+
+#define gateangle 360
+#define gatespeed 50
+
+#define BeltMoSpeed 90
+#define BeltWait 2000
+
+#define SortMoSpeed 80
+
+sub belt(){
+     OnRev(OUT_C,BeltMoSpeed);
+     Wait(BeltWait);
+     Off(OUT_C);
+     }
+sub sortMo(int angle){
+     RotateMotorEx(OUT_B, SortMoSpeed, angle, 0, false, true); // sort motor
+     }
+sub gate(){
+     RotateMotorEx(OUT_A, gatespeed, -gateangle, 0, false, true);
+     }
+
+task main(){
+
+  SetSensorType(IN_1,  SENSOR_TYPE_LIGHT_ACTIVE);
+  SetSensorMode(IN_1, SENSOR_MODE_RAW);
+
+   while(true)
+   {
+    if(SENSOR_1>(gray-PlusMinus) ){
+       gate();
+       sortMo(-GrayAngle);
+       belt();
+       sortMo(GrayAngle);
+       }
+     else if(SENSOR_1>(black-PlusMinus) & SENSOR_1<(black+PlusMinus)){
+       gate();
+       belt();
+       }
+     else{
+       TextOut(15,LCD_LINE3,"BLOCK NOT IDENTIFIED");
+       Wait(5000);
+       ClearScreen();
+       }
+   }
+}
